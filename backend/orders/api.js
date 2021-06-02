@@ -37,7 +37,7 @@ router.post("/", (req, res) => {
 
 //get all orders
 router.get("/", (req, res) => {
-  var sql = `select o.id, o.order_date, o.shipping_date , o.unit, o.units_sold , u.price, u.cost, l.country, l.region, p.priority, s.channel,
+  var sql = `select o.id, o.order_date, o.shipping_date , o.unit, o.units_sold , u.price, u.cost as unit_cost, l.country, l.region, p.priority, s.channel,
   (ROUND(o.units_sold*u.price, 2)) as revenue, (ROUND(o.units_sold * u.cost, 2)) as cost, ( (ROUND(o.units_sold*u.price, 2)) - (ROUND(o.units_sold * u.cost, 2)) ) as profit
   from orders o inner join units u on u.type = o.unit inner join location l on o.location = l.id inner join priority p on o.priority = p.id 
   inner join sales_channel s on o.channel = s.id `;

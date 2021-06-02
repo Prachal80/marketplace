@@ -1,0 +1,33 @@
+.display-container {
+    margin: 2% 3% 0 3%;
+}
+
+.heading {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: large;
+    min-width: 120px;
+    padding: 3px;
+}
+
+.heading-logo {
+    min-width: 30px;
+}
+
+.logo {
+    cursor: pointer;
+}
+
+.logo-image {
+    height: 24px;
+    width: 24px;
+}
+
+.search-input {
+    margin-top: 1%;
+    width: 30%;
+}
+
+.table {
+    margin: 2% 0 0 0 ;
+}
