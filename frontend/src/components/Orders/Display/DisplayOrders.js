@@ -4,7 +4,7 @@ import axios from 'axios'
 import './DisplayOrder.css'
 import { BACKEND_URL } from '../../Config/BackendConfig'
 import { BACKEND_PORT } from '../../Config/BackendConfig'
-import Refresh_Logo from '../../../Images/refresh.svg'
+import Update_Logo from '../../../Images/edit.svg'
 import Delete_Logo from '../../../Images/trash.svg'
 
 export default class DisplayOrders extends Component {
@@ -13,6 +13,8 @@ export default class DisplayOrders extends Component {
         super( props )
         this.state = {
             headings: [ "Region-region", "Country-country", "Item Type-unit", "Sales Channel-channel", "Order Priority-priority", "Order ID-id", "Order Date-order_date", "Ship Date-shipping_date", "Units Sold-units_sold", "Unit Price-price", "Unit Cost-unit_cost", "Total Revenue-revenue", "Total Cost-cost", "Total Profit-profit" ],
+            decimalSet : new Set(["price", "unit_cost","revenue", "cost","profit"]),
+            dateSet : new Set(["order_date", "shipping_date"]),
             sortOrder: "A",
             search: "",
             orders: [],
@@ -37,23 +39,65 @@ export default class DisplayOrders extends Component {
             } )
     }
 
-    sort = ( sortBy ) => {
+    sortByField = ( sortBy ) => {
         console.log( sortBy )
-        if ( this.state.sortOrder === "A" ) {
-            this.setState( {
-                displayedOrders: this.state.orders.sort( ( a, b ) => {
-                    return a[ sortBy ] > b[ sortBy ] ? 1 : -1
-                } ),
-                sortOrder: "D"
-            } )
-        } else if ( this.state.sortOrder === "D" ) {
-            this.setState( {
-                displayedOrders: this.state.orders.sort( ( a, b ) => {
-                    return a[ sortBy ] < b[ sortBy ] ? 1 : -1
-                } ),
-                sortOrder: "A"
-            } )
+        if(this.state.decimalSet.has(sortBy)){
+            if ( this.state.sortOrder === "A" ) {
+                this.setState( {
+                    displayedOrders: this.state.orders.sort( ( a, b ) => {
+                        return Number(a[ sortBy ]) > Number(b[ sortBy ]) ? 1 : -1
+                    } ),
+                    sortOrder: "D"
+                } )
+            } else if ( this.state.sortOrder === "D" ) {
+                this.setState( {
+                    displayedOrders: this.state.orders.sort( ( a, b ) => {
+                        return Number(a[ sortBy ]) < Number(b[ sortBy ]) ? 1 : -1
+                    } ),
+                    sortOrder: "A"
+                } )
+            }
+
         }
+        else if(this.state.dateSet.has(sortBy)){
+            if ( this.state.sortOrder === "A" ) {
+                this.setState( {
+                    displayedOrders: this.state.orders.sort( ( a, b ) => {
+                        var c = new Date(a[sortBy]);
+                        var d = new Date(b[sortBy]);
+                        return c-d;
+                    } ),
+                    sortOrder: "D"
+                } )
+            } else if ( this.state.sortOrder === "D" ) {
+                this.setState( {
+                    displayedOrders: this.state.orders.sort( ( a, b ) => {
+                        var c = new Date(a[sortBy]);
+                        var d = new Date(b[sortBy]);
+                        return -1*(c-d);
+                    } ),
+                    sortOrder: "A"
+                } )
+            }
+        }
+        else{
+            if ( this.state.sortOrder === "A" ) {
+                this.setState( {
+                    displayedOrders: this.state.orders.sort( ( a, b ) => {
+                        return a[ sortBy ] > b[ sortBy ] ? 1 : -1
+                    } ),
+                    sortOrder: "D"
+                } )
+            } else if ( this.state.sortOrder === "D" ) {
+                this.setState( {
+                    displayedOrders: this.state.orders.sort( ( a, b ) => {
+                        return a[ sortBy ] < b[ sortBy ] ? 1 : -1
+                    } ),
+                    sortOrder: "A"
+                } )
+            }
+        }
+
     }
 
     updateDisplayedOrders = ( e ) => {
@@ -103,14 +147,14 @@ export default class DisplayOrders extends Component {
                             <th className="heading-logo">Update</th>
                             <th className="heading-logo">Delete</th>
                             { this.state.headings.map( heading => {
-                                return <th key={ Math.random() } className="heading" onClick={ () => this.sort( heading.split( "-" )[ 1 ] ) }>{ heading.split( "-" )[ 0 ] }</th>
+                                return <th key={ Math.random() } className="heading" onClick={ () => this.sortByField( heading.split( "-" )[ 1 ] ) } >{ heading.split( "-" )[ 0 ] }</th>
                             } ) }
                         </tr>
                     </thead>
                     <tbody>
                         { this.state.displayedOrders.map( order => {
                             return <tr key={ Math.random() }>
-                                <td className="logo" onClick={ () => this.updateDetails( order ) }><img src={ Refresh_Logo } alt="refresh_logo" className="logo-image" /></td>
+                                <td className="logo" onClick={ () => this.updateDetails( order ) }><img src={ Update_Logo } alt="refresh_logo" className="logo-image" /></td>
                                 <td className="logo" onClick={ () => this.deleteDetails( order ) }><img src={ Delete_Logo } alt="refresh_logo" className="logo-image" /></td>
                                 <td>{ order.region }</td>
                                 <td>{ order.country }</td>

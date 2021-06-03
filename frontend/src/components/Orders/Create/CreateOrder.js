@@ -103,6 +103,40 @@ export default class CreateOrder extends Component {
         } )
     }
 
+    onUnitsChange = ( e ) => {
+        if(e.target.value > 0){
+            this.setState( {
+                noOfUnits: e.target.value,
+                error: ""
+            } )
+        } 
+        else {
+            this.setState( {
+                error: "* Units must be greater than 0"
+            } )
+        }
+       
+    }
+
+    onDateChange = (e) => {
+        var orderDateNow = (this.state.shipDate) ? new Date (this.state.shipDate) : new Date();
+        orderDateNow.setHours(0,0,0,0)
+        var inputDate = new Date(e.target.value).setHours(0,0,0,0)
+       
+        if(inputDate > orderDateNow){
+            this.setState({
+               shipDate : e.target.value,
+               error: ""
+            })
+        }
+        else {
+            this.setState( {
+                error: "* Shipping Date should be after Order Date"
+            } )
+        }
+        
+    }
+
     getPayload = () => {
         let priority = this.state.priorities.filter( ( priority ) => priority.priority === this.state.priority )[ 0 ].id
         let channel = this.state.channels.filter( ( channel ) => channel.channel === this.state.channel )[ 0 ].id
@@ -142,7 +176,7 @@ export default class CreateOrder extends Component {
                 } )
         } else {
             this.setState( {
-                error: "*Some required fields are empty"
+                error: "* Some required fields are empty"
             } )
         }
     }
@@ -198,13 +232,13 @@ export default class CreateOrder extends Component {
                     <div className="form-group row">
                         <label htmlFor="noOfUnits" className="col-sm-2 col-form-label">No of Units*</label>
                         <div className="col-sm-10">
-                            <input type="number" className="form-control" name="noOfUnits" id="noOfUnits" placeholder="No of units" onChange={ this.onChange } value={ this.state.noOfUnits } />
+                            <input type="number" min ="1" className="form-control" name="noOfUnits" id="noOfUnits" placeholder="No of units" onChange={ this.onUnitsChange } value={ this.state.noOfUnits } />
                         </div>
                     </div>
                     <div className="form-group row">
                         <label htmlFor="shipDate" className="col-sm-2 col-form-label">Ship Date*</label>
                         <div className="col-sm-10">
-                            <input type="date" className="form-control" name="shipDate" id="shipDate" placeholder="Ship Date" onChange={ this.onChange } value={ this.state.shipDate } />
+                            <input type="date" className="form-control" name="shipDate" id="shipDate" placeholder="Ship Date" onChange={ this.onDateChange } value={ this.state.shipDate } />
                         </div>
                     </div>
                     <div className="form-group row">
