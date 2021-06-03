@@ -16,6 +16,7 @@ export default class DisplayOrders extends Component {
             decimalSet : new Set(["price", "unit_cost","revenue", "cost","profit"]),
             dateSet : new Set(["order_date", "shipping_date"]),
             sortOrder: "A",
+            searchCriteria: "country",
             search: "",
             orders: [],
             displayedOrders: []
@@ -26,6 +27,7 @@ export default class DisplayOrders extends Component {
         axios.get( BACKEND_URL + ":" + BACKEND_PORT + "/orders" )
             .then( ( res ) => {
                 if ( res.status === 200 ) {
+                    console.log(res.data)
                     this.setState( {
                         orders: res.data,
                         displayedOrders: res.data
@@ -102,10 +104,19 @@ export default class DisplayOrders extends Component {
 
     updateDisplayedOrders = ( e ) => {
         if ( e.target.value ) {
-            this.setState( {
-                displayedOrders: this.state.orders.filter( ( order ) => order.country.toUpperCase().startsWith( e.target.value.toUpperCase() ) )
-            } )
-        } else {
+            if(this.state.searchCriteria === "id"){
+                this.setState( {
+                    displayedOrders: this.state.orders.filter( ( order ) => JSON.stringify(order[this.state.searchCriteria]).startsWith( e.target.value) )
+                } )
+            }
+            else{
+                this.setState( {
+                    displayedOrders: this.state.orders.filter( ( order ) => order[this.state.searchCriteria].toUpperCase().startsWith( e.target.value.toUpperCase() ) )
+                } )
+
+            }
+        } 
+        else {
             this.setState( {
                 displayedOrders: this.state.orders
             } )
@@ -136,11 +147,28 @@ export default class DisplayOrders extends Component {
             } )
     }
 
+    selectSearchCriteria = (e) => {
+        this.setState({
+          searchCriteria: e.target.value,
+        });
+      };
+
     render () {
         return (
             <div className="display-container">
                 <h2 className="text-center">Order Details</h2>
-                <input type="text" class="form-control search-input" id="search" placeholder="Search by country..." onChange={ this.updateDisplayedOrders }></input>
+                <select
+                  id="inputState"
+                  class="form-control"
+                  onChange={this.selectSearchCriteria}
+                >
+                  <option value="country">Country</option>
+                  <option value="unit">Item Type</option>
+                  <option value="id">Order ID</option>
+                  <option value="order_date">Order Date</option>
+                  <option value="shipping_date">Ship Date</option>
+                </select>
+                <input type="text" class="form-control search-input" id="search" placeholder="Search by ... " onChange={ this.updateDisplayedOrders }></input>
                 <table className="table table-striped table-bordered table-sm" cellSpacing="0">
                     <thead>
                         <tr>
